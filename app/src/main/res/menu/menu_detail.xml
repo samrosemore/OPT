@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/nav_home"
+        android:title="@string/iconHome"
+        android:icon="@drawable/ic_home_white_24dp"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/nav_setting"
+        android:title="@string/iconSettings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/nav_em_contacts"
+        android:title="@string/iconEmergencyContact"
+        android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+        app:showAsAction="always"
+        />
+
+
+
+</menu>

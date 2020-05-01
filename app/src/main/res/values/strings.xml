@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">OPT</string>
+    <string name="iconHome" translatable="true">Home</string>
+    <string name="iconSettings" translatable="true">Settings</string>
+    <string name="iconEmergencyContact" translatable="true">Emergency Contacts</string>
+
+    <string name="enabledText">Check In</string>
+    <string name="disabledText">Not Checked In for the Day</string>
+
+    <string name="enableQuestion">Check In?</string>
+
+
+    <string name="numWarnings">How many warnings before the emergency contacts are notified?</string>
+    <string name="period">Time Period to Check In:</string>
+
+    <string-array name="periodTimes">
+
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>18 hours</item>
+        <item>24 hours</item>
+        <item>48 hours</item>
+        <item>72 hours</item>
+
+
+    </string-array>
+
+    <string name="timeInterval">How Long Between Each Notification?</string>
+
+    <string-array name="intervalTimes">
+
+        <item>1 Hour</item>
+        <item>2 Hours</item>
+        <item>3 Hours</item>
+        <item>4 Hours</item>
+
+    </string-array>
+
+
+    <string name="contact1">Emergency Contact #1</string>
+    <string name="contact2">Emergency Contact #2</string>
+    <string name="hintName">Full Name</string>
+    <string name="hintPhoneNumber">Phone Number</string>
+    <string name="hintEmail">Email</string>
+
+    <string name="submit">Submit</string>
+    <string name="update">Update</string>
+
+    <string name="appName">Old People Tracker</string>
+    <string name="login">Login</string>
+    <string name="loginUsernameHint">Username</string>
+    <string name="loginPasswordHint">Password</string>
+    <string name="signUpOption">Sign Up?</string>
+    <string name="signUp">Sign Up</string>
+    <string name="fullName">Full Name</string>
+
+
+</resources>
