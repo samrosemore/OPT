@@ -1,6 +1,5 @@
 package com.example.opt;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -16,6 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,9 +29,7 @@ import org.json.JSONObject;
 public class EmergencyContacts extends Fragment
 {
 
-    private String username;
-    private JsonReader jsonReader;
-    private Handler handler;
+
     private View view;
     private UserInfo userInfo;
 
@@ -36,55 +40,76 @@ public class EmergencyContacts extends Fragment
     private EditText contact2;
     private EditText twoPhoneNumber;
     private EditText twoEmail;
+
+
+    private FirebaseFirestore db;
+    private String uID;
+    private String[] strArgs;
+    private long[] longArgs;
+
+
+    private EmergencyContacts emContacts;
+    private Handler handler;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_emergency_contacts, container, false);
-
-        this.userInfo = getArguments().getParcelable("userInfo");
-        this.username = userInfo.getUsername();
-
         //now to set these values
-        contact1 = (EditText) view.findViewById(R.id.contact1FullName);
-        contact1.setText(userInfo.getContactOne());
-
-        onePhoneNumber = (EditText) view.findViewById(R.id.contact1PhoneNumber);
-        onePhoneNumber.setText("" + userInfo.getOnePhoneNumber());
-
-        oneEmail = (EditText) view.findViewById(R.id.contact1Email);
-        oneEmail.setText(userInfo.getOneEmail());
-
-        //now to set these values
-        contact2 = (EditText) view.findViewById(R.id.contact2FullName);
-        contact2.setText(userInfo.getContactTwo());
-
-        twoPhoneNumber = (EditText) view.findViewById(R.id.contact2PhoneNumber);
-        twoPhoneNumber.setText("" + userInfo.getTwoPhoneNumber());
-
-        twoEmail = (EditText) view.findViewById(R.id.contact2Email);
-        twoEmail.setText(userInfo.getOneEmail());
 
 
+        //self reference
 
 
+        //firebase stuff
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        this.uID = user.getUid();
+        db = FirebaseFirestore.getInstance();
+
+        emContacts = this;
+
+        db.collection("EmergencyContacts").document(uID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
+            {
+                strArgs = new String[4];
+                strArgs[0] = (String) documentSnapshot.getData().get("contactOne");
+                strArgs[1] = (String) documentSnapshot.getData().get("contactTwo");
+                strArgs[2] = (String) documentSnapshot.getData().get("oneEmail");
+                strArgs[3] = (String) documentSnapshot.getData().get("twoEmail");
+
+                longArgs = new long[2];
+                longArgs[0] = (long) documentSnapshot.getData().get("onePhoneNumber");
+                longArgs[1] = (long) documentSnapshot.getData().get("twoPhoneNumber");
 
 
+                contact1 = (EditText) view.findViewById(R.id.contact1FullName);
+                onePhoneNumber = (EditText) view.findViewById(R.id.contact1PhoneNumber);
+                oneEmail = (EditText) view.findViewById(R.id.contact1Email);
+                //now to set these values
+                contact2 = (EditText) view.findViewById(R.id.contact2FullName);
+                twoPhoneNumber = (EditText) view.findViewById(R.id.contact2PhoneNumber);
+                twoEmail = (EditText) view.findViewById(R.id.contact2Email);
+
+                emContacts.receive(strArgs, longArgs);
+
+                //on thread outside main AI thread ... create handler and that stuff to solve the error
+                contact1.setText(strArgs[0]);
+                contact2.setText(strArgs[1]);
+
+                oneEmail.setText(strArgs[2]);
+                twoEmail.setText(strArgs[3]);
+
+                onePhoneNumber.setText("" + longArgs[0]);
+                twoPhoneNumber.setText("" + longArgs[1]);
+            }
+        });
 
         final Toast toast = Toast.makeText(getActivity(), "successfully updated emergency contacts", Toast.LENGTH_LONG);
-        handler = new Handler(Looper.getMainLooper())
-        {
-            @Override
-            public void handleMessage(Message inputMessage)
-            {
-                if(inputMessage.what == 1)
-                {
-                   toast.show();
-                }
 
-            }
-        };
 
         Button button = (Button) view.findViewById(R.id.statusChangeEM);
 
@@ -95,20 +120,49 @@ public class EmergencyContacts extends Fragment
             @Override
             public void onClick(View v)
             {
-                String contactOne = ((EditText) view.findViewById(R.id.contact1FullName)).getText().toString();
-                int onePhoneNumber = Integer.parseInt(((EditText) view.findViewById(R.id.contact1PhoneNumber)).getText().toString());
-                String contactEmail = ((EditText) view.findViewById(R.id.contact1Email)).getText().toString();
+                String strPhoneOne = ((EditText) view.findViewById(R.id.contact1PhoneNumber)).getText().toString();
+                String strPhoneTwo = ((EditText) view.findViewById(R.id.contact2PhoneNumber)).getText().toString();
 
-                String contactTwo = ((EditText) view.findViewById(R.id.contact2FullName)).getText().toString();
-                int twoPhoneNumber = Integer.parseInt(((EditText) view.findViewById(R.id.contact2PhoneNumber)).getText().toString());
-                String twoEmail = ((EditText) view.findViewById(R.id.contact2Email)).getText().toString();
+                if(Verification.checkPhoneNumber(strPhoneOne) && Verification.checkPhoneNumber(strPhoneTwo))
+                {
+                    String contactEmail = ((EditText) view.findViewById(R.id.contact1Email)).getText().toString();
+                    String twoEmail = ((EditText) view.findViewById(R.id.contact2Email)).getText().toString();
 
-                userInfo.updateEmergencyContacts(contactOne, onePhoneNumber, contactEmail, contactTwo, twoPhoneNumber, twoEmail);
+                    if(Verification.checkEmail(contactEmail) && Verification.checkEmail(twoEmail))
+                    {
+                        String contactOne = ((EditText) view.findViewById(R.id.contact1FullName)).getText().toString();
+                        long onePhoneNumber = Integer.parseInt(strPhoneOne);
 
-                jsonReader = new JsonReader(emContacts, username, contactOne, onePhoneNumber, contactEmail, contactTwo, twoPhoneNumber, twoEmail);
-                jsonReader.start();
+
+                        String contactTwo = ((EditText) view.findViewById(R.id.contact2FullName)).getText().toString();
+                        long twoPhoneNumber = Integer.parseInt(strPhoneTwo);
+
+
+                        db.collection("EmergencyContacts").document(uID).update("contactOne", contactOne);
+                        db.collection("EmergencyContacts").document(uID).update("contactTwo", contactTwo);
+
+                        db.collection("EmergencyContacts").document(uID).update("oneEmail", contactEmail);
+                        db.collection("EmergencyContacts").document(uID).update("onePhoneNumber", onePhoneNumber);
+
+                        db.collection("EmergencyContacts").document(uID).update("twoEmail", twoEmail);
+                        db.collection("EmergencyContacts").document(uID).update("twoPhoneNumber", twoPhoneNumber);
+                    }
+                }
+
             }
         });
+
+        //just in case
+        handler = new Handler(Looper.getMainLooper())
+        {
+            @Override
+            public void handleMessage(Message inputMessage)
+            {
+
+
+            }
+        };
+
 
 
 
@@ -128,19 +182,27 @@ public class EmergencyContacts extends Fragment
 
     }
 
-    public void receive(String jsonResult)
-    {
-        String success = "0";
-        try{
-            JSONObject jObject = new JSONObject(jsonResult);
-            String strMessage = jObject.getString("message");
-            success = jObject.getString("success");
+    private void receive(String[] strArgs, long[] longArgs)  {
+        try
+        {
+            String jsonString = new JSONObject().put("contactOne", strArgs[0])
+                    .put("contactTwo", strArgs[1])
+                    .put("oneEmail", strArgs[2])
+                    .put("twoEmail", strArgs[3])
+                    .put("onePhoneNumber", longArgs[0])
+                    .put("twoPhoneNumber", longArgs[1]).toString();
+            // Message message = handler.obtainMessage(1, );
+            //  message.sendToTarget();
         }
-        catch(JSONException e)
+        catch(Exception e)
         {
             e.printStackTrace();
         }
-        Message message = handler.obtainMessage(Integer.parseInt(success));
-        message.sendToTarget();
+
     }
+
+
+
+
+
 }

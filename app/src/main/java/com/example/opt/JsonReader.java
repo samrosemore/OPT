@@ -2,6 +2,9 @@ package com.example.opt;
 
 import android.net.Uri;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class JsonReader extends Thread {
+
+    //only for check in
+    private Home home;
     //only for login
     private Login login;
     //will be used in  login and signup
@@ -54,6 +60,15 @@ public class JsonReader extends Thread {
     private String twoEmail;
 
 
+
+
+
+    public JsonReader(String username, Home home)
+    {
+        this.action = "checkIn";
+        this.username = username;
+        this.home = home;
+    }
 
     //to access with login
     public JsonReader(String username, String password, Login login)
@@ -148,6 +163,10 @@ public class JsonReader extends Thread {
         {
             this.jsonResult = alterEmergencyContact();
         }
+        else if(action.equals("checkIn"))
+        {
+            this.jsonResult = checkIn();
+        }
 
 
         sendResultUpstream();
@@ -156,6 +175,56 @@ public class JsonReader extends Thread {
 
 
 
+    }
+    private String checkIn()
+    {
+        try {
+            URL myScript = new URL("http://192.168.1.153/opt/userManagment.php");
+            HttpURLConnection conn = (HttpURLConnection) myScript.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("User-Agent", "Chrome/81.0.4044.122");
+
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            Uri.Builder builder = new Uri.Builder();
+            builder.appendQueryParameter("Action", this.action);
+            builder.appendQueryParameter("username", this.username);
+
+            String query = builder.build().getEncodedQuery();
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, StandardCharsets.UTF_8));
+
+            writer.write(query);
+            writer.flush();
+            writer.close();
+            os.close();
+
+
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+            String line;
+            StringBuilder stringBuilder = new StringBuilder();
+
+
+            while((line = bReader.readLine()) != null)
+            {
+                stringBuilder.append(line);
+            }
+
+
+            return stringBuilder.toString();
+
+
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private String alterEmergencyContact()
@@ -382,29 +451,33 @@ public class JsonReader extends Thread {
 
         if(this.action.equals("login"))
         {
-            this.login.receive(jsonResult);
+            //this.login.receive(jsonResult);
         }
         else if(this.action.equals("signUp"))
         {
-            this.signUp.receive(jsonResult);
+            //this.signUp.receive(jsonResult);
         }
         //this will be sent to the mandatory settings class
         else if(this.action.equals("updateCustomSettings") && mSettings != null)
         {
-            this.mSettings.receive(jsonResult);
+            //this.mSettings.receive(jsonResult);
         }
         //this will be sent to the non mandatory settings class
         else if(this.action.equals("updateCustomSettings") && settings != null)
         {
-            this.settings.receive(jsonResult);
+            //this.settings.receive(jsonResult);
         }
         else if(this.action.equals("addEmergencyContacts"))
         {
-            this.mEmergencyContacts.receive(jsonResult);
+            //this.mEmergencyContacts.receive(jsonResult);
         }
         else if(this.action.equals("alterEmergencyContacts"))
         {
-            this.emergencyContacts.receive(jsonResult);
+            //this.emergencyContacts.receive(jsonResult);
+        }
+        else if(this.action.equals("checkIn"))
+        {
+            //this.home.receive(jsonResult);
         }
 
 
