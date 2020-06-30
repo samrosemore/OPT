@@ -1,8 +1,8 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
-import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,16 +12,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Welcome extends Fragment
 {
 
-    View view;
+    private View view;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        //for testing purposes
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        /*
+        ArrayList<String> dummyList = new ArrayList<>();
+        dummyList.add("hey");
+        dummyList.add("hello");
+        dummyList.add("whatcha doing");
+        Map<String, Object> propertiesToAdd = new HashMap<>();
+        propertiesToAdd.put("dummyList", dummyList);
+
+         */
+
+
+
         view = inflater.inflate(R.layout.fragment_welcome, container, false);
 
         Button login = (Button) view.findViewById(R.id.loginWelcomeScreen);
@@ -33,10 +61,10 @@ public class Welcome extends Fragment
             @Override
             public void onClick(View v)
             {
-
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                FragmentManager fragMag = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragMag.beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
-                fragmentTransaction.replace(R.id.frame_layout, new Login());
+                fragmentTransaction.replace(R.id.welcome_frame, new Login());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
 
@@ -50,7 +78,7 @@ public class Welcome extends Fragment
             {
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
                 fragmentTransaction.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
-                fragmentTransaction.replace(R.id.frame_layout, new Login());
+                fragmentTransaction.replace(R.id.welcome_frame, new SignUp());
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

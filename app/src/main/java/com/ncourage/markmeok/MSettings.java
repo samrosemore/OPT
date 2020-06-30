@@ -1,17 +1,12 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import android.app.Activity;
+
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -21,9 +16,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,24 +83,39 @@ public class MSettings extends AppCompatActivity
 
             Map<String, Object> propertiesToAdd = new HashMap<>();
             propertiesToAdd.put("timePeriod", timePeriod);
-            propertiesToAdd.put("startTime", (new Date().getTime())/1000); //current time in SECONDS (SWIFT STORES SHIT IN SECONDS...DON'T ASK ME WHY ... ITS STUPID"
+            propertiesToAdd.put("startingTime", (new Date().getTime())/1000.0); //current time in SECONDS (SWIFT STORES SHIT IN SECONDS...DON'T ASK ME WHY ... ITS STUPID"
             propertiesToAdd.put("numWarnings", numWarnings);
             propertiesToAdd.put("timeBetweenWarnings", timeBetweenIntervals);
 
-            db.collection("users").document(uID).set(propertiesToAdd).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid)
-                {
-                    Intent intent = new Intent(mSettings.getApplicationContext(), MEmergencyContacts.class);
-                    startActivity(intent);
-                }
-            })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+            db.collection("Groups").document(getIntent().getStringExtra("groupName")).set(propertiesToAdd,  SetOptions.merge())
+                    .addOnSuccessListener(new OnSuccessListener<Void>()
+                    {
+                        @Override
+                        public void onSuccess(Void aVoid)
+                        {
+                            //send invitations to other users
+
+
+                            for(String s: getIntent().getStringArrayListExtra("otherUsers"))
+                            {
+                                Map<String, Object> propertiesToAdd = new HashMap<>();
+
+
+                                propertiesToAdd.put("host", FirebaseAuth.getInstance().getUid());
+
+                                db.collection("users").document(s).collection("invitation").document(getIntent().getStringExtra("groupName")).set(propertiesToAdd);
+                            }
+
+                            Intent intent = new Intent(mSettings.getApplicationContext(), GroupListings.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
 
 
 

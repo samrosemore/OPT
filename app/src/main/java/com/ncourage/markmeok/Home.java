@@ -1,7 +1,6 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,30 +14,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,6 +60,7 @@ public class Home extends Fragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
+
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
@@ -92,14 +78,17 @@ public class Home extends Fragment
 
         db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(uID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        //self reference
+        home = this;
+
+        db.collection("Groups").document(getArguments().getString("groupName")).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
             {
                 if(documentSnapshot != null && documentSnapshot.exists())
                 {
 
-                    startTime =  (Double) documentSnapshot.getData().get("startTime"); //IN SECONDS
+                    startTime =  (Double) documentSnapshot.getData().get("startingTime"); //IN SECONDS
                     timePeriod =  ((Long) documentSnapshot.getData().get("timePeriod")).doubleValue() * 3600.0; //CONVERTED TO SECONDS
 
                     timer.scheduleAtFixedRate(new TimerTask()
@@ -119,8 +108,8 @@ public class Home extends Fragment
 
 
 
-                //self reference
-                home = this;
+
+
 
 
 
@@ -145,20 +134,22 @@ public class Home extends Fragment
             {
 
 
-                db.collection("users").document(uID).update("startTime", new Date().getTime()/1000.0);
+                db.collection("Groups").document(getArguments().getString("groupName")).update("startingTime", new Date().getTime()/1000.0);
             }
         });
 
-        TextView signOutOption = view.findViewById(R.id.signOutOption);
-        signOutOption.setLinksClickable(true);
 
-        signOutOption.setOnClickListener(new View.OnClickListener() {
+
+        TextView backToGroupListings = view.findViewById(R.id.backToGroupListings);
+        backToGroupListings.setLinksClickable(true);
+
+        backToGroupListings.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent toLogin = new Intent(getActivity(), MainActivity.class);
-                startActivity(toLogin);
-
+            public void onClick(View v)
+            {
+                Intent toGroups = new Intent(getActivity(), GroupListings.class);
+                startActivity(toGroups);
             }
         });
 

@@ -1,4 +1,4 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.opt", appContext.getPackageName());
+        assertEquals("com.example.com.ncourage.markmeok", appContext.getPackageName());
     }
 }

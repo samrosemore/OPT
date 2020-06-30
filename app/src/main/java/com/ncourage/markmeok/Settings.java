@@ -1,18 +1,11 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,26 +15,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.time.Period;
-import java.util.Date;
-import java.util.Objects;
-import java.util.TimerTask;
 
 
 public class Settings extends Fragment
@@ -61,7 +40,7 @@ public class Settings extends Fragment
     private String uID;
     private FirebaseFirestore db;
 
-    private UserInfo userInfo;
+
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -76,7 +55,7 @@ public class Settings extends Fragment
         db = FirebaseFirestore.getInstance();
 
 
-        db.collection("users").document(uID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        db.collection("Groups").document(getArguments().getString("groupName")).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
             {
@@ -109,6 +88,14 @@ public class Settings extends Fragment
                         numWarningsInput = (EditText) view.findViewById(R.id.numWarningsInput);
                         numWarningsInput.setText("" + numWarnings);
                     }
+
+                    if(getArguments().getBoolean("isAdmin"))
+                    {
+                        spinnerPeriod.setEnabled(false);
+                        spinnerInterval.setEnabled(false);
+                        numWarningsInput.setEnabled(false);
+                    }
+
 
                 }
             }

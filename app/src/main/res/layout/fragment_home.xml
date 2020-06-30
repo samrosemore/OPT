@@ -6,21 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <TextView
-        android:id="@+id/signOutOption"
+        android:id="@+id/backToGroupListings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#FFF"
-        android:text="@string/signOut"
+        android:text="Back to Group Listings?"
         android:textAlignment="center"
         android:textColor="#0d89d6"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.202" />
+        app:layout_constraintVertical_bias="0.202"
+        />
 
     <ImageView
         android:id="@+id/imageView"
@@ -43,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="180dp"
         android:text="12:00"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="#1537bf"
         android:fontFamily="sans-serif-light"
         android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"

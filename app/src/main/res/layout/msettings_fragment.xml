@@ -4,52 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MSettings"
-    android:background="@color/logoColor"
     >
-
-    <TextView
-        android:id="@+id/mSettingsFragmentTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:text="@string/iconSettings"
-        android:textAlignment="center"
-        android:textSize="28sp"
-        android:paddingTop="10sp"
-        android:paddingBottom="10sp"
-
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <View
-        android:id="@+id/SplitLine_hor1"
-        android:layout_width="match_parent"
-        android:layout_height= "2dp"
-        android:background="#000"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/mSettingsFragmentTitle"/>
-
-
 
     <TextView
         android:id="@+id/mTextPeriod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:textColor="#FFF"
         android:text="@string/period"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.149"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/SplitLine_hor1" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/mSpinnerPeriod"
         android:layout_width="153dp"
         android:layout_height="36dp"
         android:layout_marginTop="12dp"
+        android:backgroundTint="#FFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.108"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +40,7 @@
         android:text="@string/numWarnings"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#FFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.252"
         app:layout_constraintStart_toStartOf="parent"
@@ -75,9 +52,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:textColorHint="@color/colorAccent"
-        android:textColor="@color/colorAccent"
-        android:backgroundTint="@color/colorAccent"
+        android:textColor="#FFF"
+        android:backgroundTint="#FFF"
         android:minWidth="300dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.252"
@@ -88,6 +64,7 @@
         android:id="@+id/mTimeInterval"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#FFF"
         android:layout_marginTop="32dp"
         android:maxWidth="300dp"
         android:text="@string/timeInterval"
@@ -102,6 +79,7 @@
         android:id="@+id/mSpinnerInterval"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#FFF"
         app:layout_constraintTop_toBottomOf="@+id/mTimeInterval"
         android:layout_width="153dp"
         android:layout_height="36dp"
@@ -110,14 +88,13 @@
         />
 
     <Button
-        android:id="@+id/mStatusChange"
+        android:id="@+id/mSubmitSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="120dp"
         android:layout_marginTop="80dp"
         android:background="@drawable/btn_rounded"
         android:text="@string/submit"
-        android:onClick="onSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.500"
         app:layout_constraintStart_toStartOf="parent"

@@ -11,7 +11,7 @@
         android:id="@+id/settingsFragmentTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+
         android:text="@string/iconSettings"
         android:textAlignment="center"
         android:textSize="28sp"
@@ -21,18 +21,26 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="0dp" />
 
+    <View
+        android:id="@+id/SplitLine_hor1"
+        android:layout_width="match_parent"
+        android:layout_height= "2dp"
+        android:background="#000"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/settingsFragmentTitle"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:text="@string/period"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.149"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settingsFragmentTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/SplitLine_hor1" />
 
     <Spinner
         android:id="@+id/spinnerPeriod"
@@ -64,6 +72,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:textColorHint="@color/colorAccent"
+        android:textColor="@color/colorAccent"
+        android:backgroundTint="@color/colorAccent"
         android:minWidth="300dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.252"

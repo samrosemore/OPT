@@ -1,4 +1,4 @@
-package com.example.opt;
+package com.ncourage.markmeok;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,18 +12,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class UserInfo implements Parcelable
 {
