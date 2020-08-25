@@ -8,7 +8,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,20 +64,21 @@ public class Utilities
                     DocumentSnapshot doc = task.getResult();
                     if(doc != null && doc.exists())
                     {
-                        String strPendingUsers = (String) doc.get("pendingUsers");
-                        ArrayList<String> pendingUsers = Utilities.unStringify(strPendingUsers);
-                        pendingUsers.remove(uid);
-                        strPendingUsers = Utilities.stringifyArrayList(pendingUsers);
 
-                        String strUsers = (String) doc.get("users");
-                        ArrayList<String> users = Utilities.unStringify(strUsers);
+                        ArrayList<String> pendingUsers = (ArrayList<String>)  doc.get("pendingUsers");
+                        pendingUsers.remove(uid);
+
+
+
+                        ArrayList<String> users = (ArrayList<String>) doc.get("users");
 
                         //main line
                         users.add(uid);
 
                         Map<String, Object> propertiesToAdd = new HashMap<>();
-                        propertiesToAdd.put("users", Utilities.stringifyArrayList(users));
-                        propertiesToAdd.put("pendingUsers", strPendingUsers);
+                        propertiesToAdd.put("users", users);
+                        propertiesToAdd.put("pendingUsers", pendingUsers);
+                        propertiesToAdd.put("startTimer", true);
 
                         db.collection("Groups").document(group).update(propertiesToAdd);
 
@@ -101,11 +104,11 @@ public class Utilities
                         if(document.contains("Groups"))
                         {
 
-                            String pastGroups = (String) document.getData().get("Groups");
-                            pastGroups += group + ",";
+                            ArrayList<String> pastGroups = (ArrayList<String>) document.getData().get("Groups");
+                            pastGroups.add(group);
                             Map<String, Object> propertiesToAdd = new HashMap<>();
                             propertiesToAdd.put("Groups", pastGroups);
-                            db.collection("users").document(uid).set(propertiesToAdd)
+                            db.collection("users").document(uid).set(propertiesToAdd, SetOptions.merge())
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task)
@@ -117,8 +120,10 @@ public class Utilities
                         else
                         {
                             Map<String, Object> propertiesToAdd = new HashMap<>();
-                            propertiesToAdd.put("Groups", group + ",");
-                            db.collection("users").document(uid).set(propertiesToAdd)
+                            ArrayList<String> temp = new ArrayList<>();
+                            temp.add(group);
+                            propertiesToAdd.put("Groups", temp);
+                            db.collection("users").document(uid).set(propertiesToAdd, SetOptions.merge())
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task)

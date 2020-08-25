@@ -67,18 +67,7 @@
             android:layout_marginTop="20dp"
             />
 
-        <EditText
-            android:id="@+id/usernameSignUp"
-            android:hint="@string/loginUsernameHint"
-            android:textColorHint="@color/colorAccent"
-            android:textColor="@color/colorAccent"
-            android:backgroundTint="@color/colorAccent"
-            android:layout_width="238dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            />
+
 
         <EditText
             android:id="@+id/passwordSignUp"
@@ -102,6 +91,16 @@
             android:text="@string/signUp"
             android:onClick="onSubmit"
 
+            />
+
+        <TextView
+            android:id="@+id/legal1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_marginTop = "20dp"
+            android:paddingHorizontal="20dp"
+            android:text="By Signing Up You Agree to the Terms of Agreement and Privacy Policy"
             />
 
 

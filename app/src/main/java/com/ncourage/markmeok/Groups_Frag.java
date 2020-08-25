@@ -1,5 +1,6 @@
 package com.ncourage.markmeok;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,22 +56,35 @@ public class Groups_Frag extends Fragment
             {
                 if(documentSnapshot != null && documentSnapshot.exists())
                 {
+                    //if its the initial boot up of the app for the user
+                    if(documentSnapshot.contains("initialBootup") && documentSnapshot.getBoolean("initialBootup"))
+                    {
+                        Intent toTutorial = new Intent(frag.getContext(), Tutorial.class);
+                        startActivity(toTutorial);
+                    }
                     if(documentSnapshot.contains("Groups"))
                     {
-                        String groupString = (String) documentSnapshot.getData().get("Groups");
-                        groups = Utilities.unStringify(groupString);
+                        System.out.println("heyo");
+                        groups = (ArrayList<String>) documentSnapshot.getData().get("Groups");
+                        String defaultGroup;
+                        if(documentSnapshot.contains("defaultGroup"))
+                        {
+                            defaultGroup = documentSnapshot.getString("defaultGroup");
+                        }
+                        else
+                        {
+                            defaultGroup = groups.get(0);
+                        }
 
                         RecyclerView recView = (RecyclerView) view.findViewById(R.id.recView);
+                        ListAdapter adapter = new ListAdapter(frag.getContext(), groups, defaultGroup, "groups");
 
-
-                        ListAdapter adapter = new ListAdapter(frag.getContext(), groups, "groups");
                         recView.setAdapter(adapter);
                         recView.setLayoutManager(new LinearLayoutManager(frag.getContext()));
+
                     }
 
                 }
-
-
                 else
                 {
                     Toast.makeText(frag.getContext(), "Error connecting to internet", Toast.LENGTH_LONG).show();

@@ -23,6 +23,8 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -47,6 +49,7 @@ public class Home extends Fragment
 
     private double startTime;
     private double timePeriod;
+    private boolean shouldStartTimer;
 
     private Timer timer;
     private FirebaseFirestore db;
@@ -58,7 +61,7 @@ public class Home extends Fragment
     private Home home;
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
 
         view = inflater.inflate(R.layout.fragment_home, container, false);
@@ -73,7 +76,7 @@ public class Home extends Fragment
 
 
         statusChange = (Button) view.findViewById(R.id.statusChange);
-        status = (TextView) view.findViewById(R.id.status);
+
         digitalTimer = (TextView) view.findViewById(R.id.digitalTimer);
 
         db = FirebaseFirestore.getInstance();
@@ -88,20 +91,40 @@ public class Home extends Fragment
                 if(documentSnapshot != null && documentSnapshot.exists())
                 {
 
+                    TextView groupName = view.findViewById(R.id.selectedGroupName);
+                    groupName.setText(documentSnapshot.getString("groupName"));
                     startTime =  (Double) documentSnapshot.getData().get("startingTime"); //IN SECONDS
                     timePeriod =  ((Long) documentSnapshot.getData().get("timePeriod")).doubleValue() * 3600.0; //CONVERTED TO SECONDS
 
-                    timer.scheduleAtFixedRate(new TimerTask()
-                    {
 
-                        @Override
-                        public void run()
+                    if(documentSnapshot.contains("startTimer"))
+                    {
+                        shouldStartTimer = (boolean) documentSnapshot.getData().get("startTimer");
+                    }
+                    else
+                    {
+                        shouldStartTimer = true;
+                    }
+
+                    if(shouldStartTimer)
+                    {
+                        timer.scheduleAtFixedRate(new TimerTask()
                         {
 
-                            home.receive(calcTimeLeft());
-                        }
+                            @Override
+                            public void run()
+                            {
 
-                    }, 0, 1000);
+                                home.receive(calcTimeLeft());
+                            }
+
+                        }, 0, 1000);
+                    }
+                    else
+                    {
+                        home.receive((int) (timePeriod/3600));
+                    }
+
                 }
             }
         });
@@ -132,8 +155,6 @@ public class Home extends Fragment
             @Override
             public void onClick(View v)
             {
-
-
                 db.collection("Groups").document(getArguments().getString("groupName")).update("startingTime", new Date().getTime()/1000.0);
             }
         });
@@ -162,12 +183,15 @@ public class Home extends Fragment
             {
                 if(inputMessage.what == 1)
                 {
-                    //status.setText(res.getString(R.string.enabledText));
+                    //this means startTimer == false
+                    String message = inputMessage.obj + ":00";
+                    digitalTimer.setText(message);
                 }
                 else if(inputMessage.what == 2)
                 {
                     digitalTimer.setText((String) inputMessage.obj);
                 }
+
             }
         };
 
@@ -180,10 +204,31 @@ public class Home extends Fragment
 
     public void receive(int[] timeDimensions)
     {
-        String time = timeDimensions[0] + ":" + timeDimensions[1];
+        String time;
+
+        if(timeDimensions[0] <= 0 && timeDimensions[1] <= 0)
+        {
+            time = "00:00";
+        }
+        else if(timeDimensions[1] < 10)
+        {
+            time = timeDimensions[0] + ":0" + timeDimensions[1];
+        }
+        else
+        {
+            time = timeDimensions[0] + ":" + timeDimensions[1];
+        }
+
         Message message = handler.obtainMessage(2, time);
         message.sendToTarget();
     }
+
+    public void receive(int timePeriod)
+    {
+        Message message = handler.obtainMessage(1, timePeriod);
+        message.sendToTarget();
+    }
+
 
 
 

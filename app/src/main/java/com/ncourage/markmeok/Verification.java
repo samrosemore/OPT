@@ -7,6 +7,15 @@ public class Verification
     {
         return email.contains("@");
     }
+    public static boolean checkPassword(String password)
+    {
+        return (!password.isEmpty() && (password.length() >= 6));
+    }
+    public static boolean checkName(String name)
+    {
+        return !name.isEmpty();
+    }
+
 
     public static boolean checkPhoneNumber(String strPhoneNumber)
     {

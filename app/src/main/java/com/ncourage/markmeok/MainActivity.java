@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity
                     DocumentSnapshot doc = task.getResult();
                     if(doc != null && doc.exists())
                     {
-                        ArrayList<String> checkedInOn = Utilities.unStringify(doc.getString("checkedInOn"));
+                        ArrayList<String> checkedInOn = (ArrayList<String>) doc.get("checkedInOn");
                         if(checkedInOn.contains(FirebaseAuth.getInstance().getUid()))
                         {
                             isAdmin = false;

@@ -69,9 +69,8 @@ public class MSettings extends AppCompatActivity
 
         EditText mNumWarningsInput = (EditText) findViewById(R.id.mNumWarningsInput);
 
-        if(Verification.checkNumber(mNumWarningsInput.getText().toString()))
-        {
-            int numWarnings = Integer.parseInt(mNumWarningsInput.getText().toString());
+
+
 
             String strTimePeriod = spinnerPeriod.getSelectedItem().toString();
             int spaceIndex0 = strTimePeriod.indexOf(" ");
@@ -79,13 +78,13 @@ public class MSettings extends AppCompatActivity
 
             String stringTimeIntervals = spinnerInterval.getSelectedItem().toString();
             int spaceIndex = stringTimeIntervals.indexOf(" ");
-            int timeBetweenIntervals = Integer.parseInt(stringTimeIntervals.substring(0, spaceIndex));
+            int numWarnings = Integer.parseInt(stringTimeIntervals.substring(0, spaceIndex));
 
             Map<String, Object> propertiesToAdd = new HashMap<>();
             propertiesToAdd.put("timePeriod", timePeriod);
             propertiesToAdd.put("startingTime", (new Date().getTime())/1000.0); //current time in SECONDS (SWIFT STORES SHIT IN SECONDS...DON'T ASK ME WHY ... ITS STUPID"
             propertiesToAdd.put("numWarnings", numWarnings);
-            propertiesToAdd.put("timeBetweenWarnings", timeBetweenIntervals);
+
 
             db.collection("Groups").document(getIntent().getStringExtra("groupName")).set(propertiesToAdd,  SetOptions.merge())
                     .addOnSuccessListener(new OnSuccessListener<Void>()
@@ -102,7 +101,7 @@ public class MSettings extends AppCompatActivity
 
 
                                 propertiesToAdd.put("host", FirebaseAuth.getInstance().getUid());
-
+                                propertiesToAdd.put("groupName", getIntent().getStringExtra("nameOfGroup"));
                                 db.collection("users").document(s).collection("invitation").document(getIntent().getStringExtra("groupName")).set(propertiesToAdd);
                             }
 
@@ -119,11 +118,7 @@ public class MSettings extends AppCompatActivity
 
 
 
-        }
-        else
-        {
-            Toast.makeText(this, "Please Enter a Valid Number for the Number of Warnings", Toast.LENGTH_SHORT).show();
-        }
+
 
 
 

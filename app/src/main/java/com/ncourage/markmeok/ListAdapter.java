@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -22,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,14 +51,32 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
 
     private ListAdapter listAdapter;
 
+    private String defaultGroup;
+
 
 
     public ListAdapter(Context context, ArrayList<String> elements, String purpose)
     {
-
-
         this.context = context;
         this.purpose = purpose;
+
+        if(this.purpose.equals("groups"))
+        {
+            this.groupID = elements;
+        }
+        else
+        {
+            this.genericElements = elements;
+        }
+
+        this.db = FirebaseFirestore.getInstance();
+        this.listAdapter = this;
+    }
+    public ListAdapter(Context context, ArrayList<String> elements, String defaultGroup, String purpose)
+    {
+        this.context = context;
+        this.purpose = purpose;
+        this.defaultGroup = defaultGroup;
 
         if(this.purpose.equals("groups"))
         {
@@ -115,7 +135,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
         }
         else
         {
-            view = inflater.inflate(R.layout.row, parent, false);
+            view = inflater.inflate(R.layout.row1, parent, false);
             return new MyViewHolder(view);
         }
 
@@ -167,11 +187,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
                                         DocumentSnapshot doc = task.getResult();
                                         if(doc != null && doc.exists())
                                         {
-                                            ArrayList<String> groups =  Utilities.unStringify((String) doc.get("Groups"));
+                                            ArrayList<String> groups =  (ArrayList<String>) doc.get("Groups");
                                             groups.remove(groupID.get(position));
 
                                             Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
-                                            propertiesUpdated.put("Groups", Utilities.stringifyArrayList(groups));
+                                            propertiesUpdated.put("Groups", groups);
 
                                             db.collection("users").document(FirebaseAuth.getInstance().getUid()).update(propertiesUpdated);
 
@@ -187,6 +207,43 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
                 }
             });
 
+            if(defaultGroup.equals(groupID.get(position)))
+            {
+                holder.mainLayout.removeView(holder.defaultBtn);
+            }
+            else
+            {
+                holder.defaultBtn.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        final String group = groupID.get(position);
+                        db.collection("users").document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+                        {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                            {
+                                if(task.isSuccessful())
+                                {
+                                    DocumentSnapshot doc = task.getResult();
+                                    if(doc != null && doc.exists())
+                                    {
+                                        Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
+                                        propertiesUpdated.put("defaultGroup", group);
+                                        db.collection("users").document(FirebaseAuth.getInstance().getUid()).update(propertiesUpdated);
+                                        Intent toHomeScreen = new Intent(context, GroupListings.class);
+                                        context.startActivity(toHomeScreen);
+                                    }
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }
+
+
 
 
             holder.deleteGroup.setOnClickListener(new View.OnClickListener()
@@ -199,73 +256,96 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
                     //prevent double click
                     holder.deleteGroup.setClickable(false);
 
-                    //just have to delete the user from the database (user information and group data)
-                    db.collection("Groups").document(groupID.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                         @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task)
-                        {
-                            if(task.isSuccessful())
-                            {
-                                DocumentSnapshot doc = task.getResult();
-                                if(doc != null && doc.exists())
-                                {
-                                    ArrayList<String> groupParticipants = Utilities.unStringify((String) doc.get("users"));
-                                    ArrayList<String> checkedInOn = Utilities.unStringify((String) doc.get("checkedInOn"));
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    //just have to delete the user from the database (user information and group data)
+                                    db.collection("Groups").document(groupID.get(position)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                                        {
+                                            if(task.isSuccessful())
+                                            {
+                                                DocumentSnapshot doc = task.getResult();
+                                                if(doc != null && doc.exists())
+                                                {
+                                                    ArrayList<String> groupParticipants = (ArrayList<String>) doc.get("users");
+                                                    ArrayList<String> checkedInOn = (ArrayList<String>) doc.get("checkedInOn");
 
-                                    if(groupParticipants.contains(FirebaseAuth.getInstance().getUid()))
+                                                    if(groupParticipants.contains(FirebaseAuth.getInstance().getUid()))
+                                                    {
+                                                        groupParticipants.remove(FirebaseAuth.getInstance().getUid());
+
+                                                    }
+                                                    if(checkedInOn.contains(FirebaseAuth.getInstance().getUid()))
+                                                    {
+                                                        checkedInOn.remove(FirebaseAuth.getInstance().getUid());
+                                                    }
+
+
+                                                    if(groupParticipants.size() <= 2 || checkedInOn.size() == 0)
+                                                    {
+                                                        db.collection("Groups").document(groupID.get(position)).delete();
+                                                    }
+                                                    else
+                                                    {
+                                                        Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
+                                                        propertiesUpdated.put("users", groupParticipants);
+                                                        propertiesUpdated.put("checkedInOn", checkedInOn);
+                                                        db.collection("Groups").document(groupID.get(position)).update(propertiesUpdated);
+                                                    }
+
+
+
+
+
+                                                }
+                                            }
+
+                                        }
+                                    });
+
+                                    db.collection("users").document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
                                     {
-                                        groupParticipants.remove(FirebaseAuth.getInstance().getUid());
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                                        {
+                                            if(task.isSuccessful())
+                                            {
+                                                DocumentSnapshot doc = task.getResult();
+                                                if(doc != null && doc.exists())
+                                                {
+                                                    ArrayList<String> groups =  (ArrayList<String>) doc.get("Groups");
+                                                    groups.remove(groupID.get(position));
 
-                                    }
-                                    if(checkedInOn.contains(FirebaseAuth.getInstance().getUid()))
-                                    {
-                                        checkedInOn.remove(FirebaseAuth.getInstance().getUid());
-                                    }
+                                                    Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
+                                                    propertiesUpdated.put("Groups", groups);
 
+                                                    db.collection("users").document(FirebaseAuth.getInstance().getUid()).update(propertiesUpdated);
+                                                }
+                                            }
+                                        }
+                                    });
 
-                                    if(groupParticipants.size() <= 2 || checkedInOn.size() == 0)
-                                    {
-                                        db.collection("Groups").document(groupID.get(position)).delete();
-                                    }
-                                    else
-                                    {
-                                        Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
-                                        propertiesUpdated.put("users", Utilities.stringifyArrayList(groupParticipants));
-                                        propertiesUpdated.put("checkedInOn", Utilities.stringifyArrayList(checkedInOn));
-                                        db.collection("Groups").document(groupID.get(position)).update(propertiesUpdated);
-                                    }
+                                    break;
 
-
-
-
-
-                                }
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
                             }
-
                         }
-                    });
+                    };
 
-                    db.collection("users").document(FirebaseAuth.getInstance().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
-                    {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task)
-                        {
-                            if(task.isSuccessful())
-                            {
-                                DocumentSnapshot doc = task.getResult();
-                                if(doc != null && doc.exists())
-                                {
-                                    ArrayList<String> groups =  Utilities.unStringify((String) doc.get("Groups"));
-                                    groups.remove(groupID.get(position));
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("Are you sure you want to delete this group?").setPositiveButton("Yes", dialogClickListener)
+                            .setNegativeButton("No", dialogClickListener).show();
 
-                                    Map<String, Object> propertiesUpdated = new HashMap<String, Object>();
-                                    propertiesUpdated.put("Groups", Utilities.stringifyArrayList(groups));
 
-                                    db.collection("users").document(FirebaseAuth.getInstance().getUid()).update(propertiesUpdated);
-                                }
-                            }
-                        }
-                    });
+
+
 
                 }
             });
@@ -391,11 +471,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
 
     }
 
+    public void setDefaultGroup(String defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder
     {
 
         ConstraintLayout mainLayout;
         TextView groups;
+        TextView defaultBtn;
 
         //only will be used when purpose = listUsersInGroup
         CheckBox genericCheckBox;
@@ -419,6 +504,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
             {
                 mainLayout = (ConstraintLayout)  itemView.findViewById(R.id.mainLayout);
                 groups = (TextView) itemView.findViewById(R.id.groupName);
+                defaultBtn = (Button) itemView.findViewById(R.id.makeDefaultBtn);
                 deleteGroup = (ImageButton) itemView.findViewById(R.id.deleteGroup);
             }
             else if(purpose.equals("listUsersInGroup"))
@@ -437,11 +523,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder>
             else
             {
                 //reusing the row layout from the group list
-                mainLayout = (ConstraintLayout)  itemView.findViewById(R.id.mainLayout);
-                generic = (TextView) itemView.findViewById(R.id.groupName);
+                mainLayout = (ConstraintLayout)  itemView.findViewById(R.id.mainLayout1);
+                generic = (TextView) itemView.findViewById(R.id.personName);
             }
 
 
         }
+
     }
 }

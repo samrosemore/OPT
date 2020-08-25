@@ -13,7 +13,7 @@ public class WelcomePage extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome_page);
 
-        Welcome welcomeFragment = new Welcome();
+        Login welcomeFragment = new Login();
 
         getSupportFragmentManager().beginTransaction().replace(R.id.welcome_frame, welcomeFragment).commit();
 

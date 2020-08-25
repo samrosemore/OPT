@@ -36,21 +36,7 @@ public class Welcome extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        //for testing purposes
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        /*
-        ArrayList<String> dummyList = new ArrayList<>();
-        dummyList.add("hey");
-        dummyList.add("hello");
-        dummyList.add("whatcha doing");
-        Map<String, Object> propertiesToAdd = new HashMap<>();
-        propertiesToAdd.put("dummyList", dummyList);
-
-         */
-
-
-
-        view = inflater.inflate(R.layout.fragment_welcome, container, false);
+        view = inflater.inflate(R.layout.login_fragment, container, false);
 
         Button login = (Button) view.findViewById(R.id.loginWelcomeScreen);
         Button signUp = (Button) view.findViewById(R.id.signUpWelcomeScreen);

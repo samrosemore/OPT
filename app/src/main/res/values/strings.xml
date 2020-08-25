@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OPT</string>
+    <string name="app_name">Mark Me Ok</string>
     <string name="iconHome" translatable="true">Home</string>
     <string name="iconSettings" translatable="true">Settings</string>
     <string name="iconEmergencyContact" translatable="true">Emergency Contacts</string>
@@ -15,7 +15,7 @@
 
     <string-array name="periodTimes">
 
-
+        <item>6 hours</item>
         <item>12 hours</item>
         <item>18 hours</item>
         <item>24 hours</item>
@@ -60,5 +60,14 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <!-- for embeding youtube video-->
+    <string name="player_error">Error initializing YouTube player: %s</string>
+    <string name="seek_to">Jump To</string>
+    <string name="seek_to_hint">Seconds</string>
+
+    <string name="open">open</string>
+    <string name="close">close</string>
 
 </resources>

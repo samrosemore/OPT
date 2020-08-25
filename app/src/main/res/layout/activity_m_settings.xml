@@ -69,40 +69,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mSpinnerPeriod" />
 
-    <EditText
-        android:id="@+id/mNumWarningsInput"
-        android:inputType="number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:textColorHint="@color/colorAccent"
-        android:textColor="@color/colorAccent"
-        android:backgroundTint="@color/colorAccent"
-        android:minWidth="300dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.252"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mNumWarningsTextView" />
 
-    <TextView
-        android:id="@+id/mTimeInterval"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:maxWidth="300dp"
-        android:text="@string/timeInterval"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.252"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mNumWarningsInput" />
+
 
     <Spinner
         android:id="@+id/mSpinnerInterval"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mTimeInterval"
+        app:layout_constraintTop_toBottomOf="@+id/mNumWarningsTextView"
         android:layout_width="153dp"
         android:layout_height="36dp"
         android:layout_marginTop="12dp"

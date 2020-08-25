@@ -30,11 +30,11 @@ public class Settings extends Fragment
 
     private Spinner spinnerPeriod;
     private Spinner spinnerInterval;
-    private EditText numWarningsInput;
+
 
     private int timePeriod;
     private int numWarnings;
-    private int timeBetweenWarnings;
+
 
     private Button button;
     private String uID;
@@ -72,29 +72,19 @@ public class Settings extends Fragment
 
                         spinnerPeriod.setSelection(arrayAdapter.getPosition(timePeriod + " hours"));
                     }
-
-                    if(documentSnapshot.getData().containsKey("timeBetweenWarnings"))
+                    if(documentSnapshot.getData().containsKey("numWarnings"))
                     {
-                        timeBetweenWarnings = ((Long) documentSnapshot.getData().get("timeBetweenWarnings")).intValue();
+
+
+                        numWarnings = ((Long) documentSnapshot.getData().get("numWarnings")).intValue();
                         spinnerInterval = (Spinner) view.findViewById(R.id.spinnerInterval);
                         ArrayAdapter<CharSequence> arrayAdapter1 = ArrayAdapter.createFromResource(view.getContext(), R.array.intervalTimes, R.layout.spinner_item);
                         spinnerInterval.setAdapter(arrayAdapter1);
 
-                        spinnerInterval.setSelection(arrayAdapter1.getPosition(timeBetweenWarnings + " hours"));
-                    }
-                    if(documentSnapshot.getData().containsKey("numWarnings"))
-                    {
-                        numWarnings = ((Long) documentSnapshot.getData().get("numWarnings")).intValue();
-                        numWarningsInput = (EditText) view.findViewById(R.id.numWarningsInput);
-                        numWarningsInput.setText("" + numWarnings);
+                        spinnerInterval.setSelection(arrayAdapter1.getPosition(numWarnings + " hours"));
                     }
 
-                    if(getArguments().getBoolean("isAdmin"))
-                    {
-                        spinnerPeriod.setEnabled(false);
-                        spinnerInterval.setEnabled(false);
-                        numWarningsInput.setEnabled(false);
-                    }
+
 
 
                 }
@@ -119,31 +109,18 @@ public class Settings extends Fragment
             {
 
 
-                if(Verification.checkNumber(numWarningsInput.getText().toString()))
-                {
-                    int numWarnings = Integer.parseInt(numWarningsInput.getText().toString());
-
-                    //getting other values
-                    String strTimePeriod = spinnerPeriod.getSelectedItem().toString();
-                    int spaceIndex0 = strTimePeriod.indexOf(" ");
-                    int timePeriod = Integer.parseInt(strTimePeriod.substring(0, spaceIndex0));
-
-                    String stringTimeIntervals = spinnerInterval.getSelectedItem().toString();
-                    int spaceIndex = stringTimeIntervals.indexOf(" ");
-                    int timeBetweenIntervals = Integer.parseInt(stringTimeIntervals.substring(0, spaceIndex));
-
-                    db.collection("users").document(uID).update("timePeriod", timePeriod);
-                    db.collection("users").document(uID).update("numWarnings", numWarnings);
-                    db.collection("users").document(uID).update("timeBetweenWarnings", timeBetweenIntervals);
-
-                }
-                else
-                {
-                    Toast.makeText(view.getContext(), "Please Enter A Valid Number for the Number of Warnings", Toast.LENGTH_SHORT).show();
-                }
+                //getting other values
+                String strTimePeriod = spinnerPeriod.getSelectedItem().toString();
+                int spaceIndex0 = strTimePeriod.indexOf(" ");
+                int timePeriod = Integer.parseInt(strTimePeriod.substring(0, spaceIndex0));
 
 
+                String stringTimeIntervals = spinnerInterval.getSelectedItem().toString();
+                int spaceIndex = stringTimeIntervals.indexOf(" ");
+                int numWarnings = Integer.parseInt(stringTimeIntervals.substring(0, spaceIndex));
 
+                db.collection("Groups").document(getArguments().getString("groupName")).update("timePeriod", timePeriod);
+                db.collection("Groups").document(getArguments().getString("groupName")).update("numWarnings", numWarnings);
             }
         });
 

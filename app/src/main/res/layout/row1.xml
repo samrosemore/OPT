@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/mainLayout"
+    android:id="@+id/mainLayout1"
     >
 
 
     <TextView
-        android:id="@+id/groupName"
+        android:id="@+id/personName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -21,20 +21,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/makeDefaultBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/grayish"
-        android:text="Make Default"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/deleteGroup"
-        app:layout_constraintHorizontal_bias="0.948"
-        app:layout_constraintStart_toEndOf="@+id/groupName"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <ImageButton
-        android:id="@+id/deleteGroup"
+        android:id="@+id/deleteGroup1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -52,7 +42,7 @@
         android:layout_height= "2dp"
         android:background="#000"
         android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@id/groupName"/>
+        app:layout_constraintTop_toBottomOf="@id/personName"/>
 
 
 

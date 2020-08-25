@@ -63,9 +63,9 @@ public class EmergencyContacts extends Fragment
             {
                 if(documentSnapshot != null && documentSnapshot.exists())
                 {
-                    pendingUsers = Utilities.unStringify(documentSnapshot.getString("pendingUsers"));
-                    checkedInOn = Utilities.unStringify(documentSnapshot.getString("checkedInOn"));
-                    currentUsers = Utilities.unStringify(documentSnapshot.getString("users"));
+                    pendingUsers = (ArrayList<String>) documentSnapshot.get("pendingUsers");
+                    checkedInOn = (ArrayList<String>) documentSnapshot.get("checkedInOn");
+                    currentUsers = (ArrayList<String>) documentSnapshot.get("users");
 
                     //get 3 recycler views
                     pendingREC = (RecyclerView) view.findViewById(R.id.pendingUsers);
